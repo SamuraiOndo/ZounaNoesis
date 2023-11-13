@@ -3,6 +3,7 @@ from inc_noesis import *
 import noesis
 import rapi
 import os
+
 def registerNoesisTypes():
     handle = noesis.register("Ratatouille Bitmap_Z",".Bitmap_Z")
     noesis.setHandlerTypeCheck(handle,noepyCheckType)
@@ -12,7 +13,7 @@ def registerNoesisTypes():
 def noepyCheckType(data):
     bs = NoeBitStream(data,NOE_LITTLEENDIAN)
     bs.seek(4)
-    if bs.readInt() == 4:
+    if bs.readInt() == 8:
         bs.seek(0x10)
         if bs.readUInt() == 1471281566:
             return 1
@@ -36,7 +37,7 @@ def getTex(data,texList):
         ddstyperat = bs.readString()
         print(ddstyperat)
         bs.seek(0xb4)
-        texName = os.path.splitext(rapi.getInputName())[0]+"_"+str(texName)
+        texName = os.path.splitext(rapi.getInputName())[0]
         texData = bs.readBytes(ddssize)
         if ddstyperat == "DXT1":
             texList.append(NoeTexture(texName,texWidth,texHeight,texData,noesis.NOESISTEX_DXT1))
@@ -47,19 +48,19 @@ def getTex(data,texList):
         versionnum = bs.readBytes(0x01)
         print(versionnum)
         if versionnum == b'\x0c':
-            texName = os.path.splitext(rapi.getInputName())[0]+"_"+str(texName)
+            texName = os.path.splitext(rapi.getInputName())[0]
             bs.seek(0x34)
             texData = bs.readBytes(texWidth * texHeight * 4)
             data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "B8G8R8A8")
             texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
         if versionnum == b'\x0d':
-            texName = os.path.splitext(rapi.getInputName())[0]+"_"+str(texName)
+            texName = os.path.splitext(rapi.getInputName())[0]
             bs.seek(0x34)
             texData = bs.readBytes(texWidth * texHeight * 3)
             data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "B8G8R8")
             texList.append(NoeTexture(texName,texWidth,texHeight,data,noesis.NOESISTEX_RGBA32))
         if versionnum == b'\x07':
-            texName = os.path.splitext(rapi.getInputName())[0]+"_"+str(texName)
+            texName = os.path.splitext(rapi.getInputName())[0]
             bs.seek(0x34)
             texData = bs.readBytes(texWidth * texHeight)
             data = rapi.imageDecodeRaw(texData, texWidth, texHeight, "R2G2B2A2")
